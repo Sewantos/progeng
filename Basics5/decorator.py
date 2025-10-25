@@ -5,13 +5,13 @@ def measure_time(func):
         start_time = time.time()
         result = func(*args)
         end_time = time.time()
-        print("Время выполнения функции:", end_time - start_time)
+        print("Время выполнения функции: ", end_time - start_time)
         return result
     return wrapper
 
 @measure_time
 def summa(a, b):
-    print("Результат сложения:", a + b)
+    print("Результат сложения: ", a + b)
 
 @measure_time
 def file_sum():
@@ -22,6 +22,6 @@ def file_sum():
         f.write(str(result))
 
 
-summa(2, 3)
-
-file_sum()
+if __name__ == '__main__':
+    summa(2, 3)
+    file_sum()

@@ -9,17 +9,27 @@ class Figure(abc.ABC):
     @abc.abstractmethod
     def calculate_perimeter(self) -> float:
         pass
+    
+class Comparison(Figure, abc.ABC):
+    def get_measure(self, compare_by: str) -> float:
+        if compare_by == 'area':
+            return self.calculate_area()
+        elif compare_by == 'perimeter':
+            return self.calculate_perimeter()
+        raise ValueError("compare_by must be 'area' or 'perimeter'")
+    
+    def is_greater(self, other: Figure, compare_by: str = 'area') -> bool:
+        return self.get_measure(compare_by) > other.get_measure(compare_by)
+    
+    def is_less(self, other: Figure, compare_by: str = 'area') -> bool:
+        return self.get_measure(compare_by) < other.get_measure(compare_by)
+    
+    def are_equal(self, other: Figure, compare_by: str = 'area') -> bool:
+        return math.isclose(
+            self.get_measure(compare_by), other.get_measure(compare_by)
+        )
 
-class Comparison:
-    @staticmethod
-    def compare_figures(value1: float, value2: float) -> str:
-        if value1 > value2:
-            return "Больше"
-        elif value1 < value2:
-            return "Меньше"
-        return "Равны"
-
-class Rectangle(Figure, Comparison):
+class Rectangle(Comparison):
     def __init__(self, height: float, width: float) -> None:
         self.height: float = height
         self.width: float = width
@@ -29,14 +39,8 @@ class Rectangle(Figure, Comparison):
     
     def calculate_perimeter(self) -> float:
         return (self.height + self.width) * 2
-    
-    def compare_area(self, other: Figure) -> str:
-        return self.compare_figures(self.calculate_area(), other.calculate_area())
-    
-    def compare_perimeter(self, other: Figure) -> str:
-        return self.compare_figures(self.calculate_perimeter(), other.calculate_perimeter())
-
-class Square(Figure, Comparison):
+       
+class Square(Comparison):
     def __init__(self, side: float) -> None:
         self.side: float = side
 
@@ -46,13 +50,7 @@ class Square(Figure, Comparison):
     def calculate_perimeter(self) -> float:
         return self.side * 4
     
-    def compare_area(self, other: Figure) -> str:
-        return self.compare_figures(self.calculate_area(), other.calculate_area())
-    
-    def compare_perimeter(self, other: Figure) -> str:
-        return self.compare_figures(self.calculate_perimeter(), other.calculate_perimeter())
-
-class Circle(Figure, Comparison):
+class Circle(Comparison):
     def __init__(self, radius: float) -> None:
         self.radius: float = radius
 
@@ -61,14 +59,8 @@ class Circle(Figure, Comparison):
     
     def calculate_perimeter(self) -> float:
         return 2 * math.pi * self.radius
-    
-    def compare_area(self, other: Figure) -> str:
-        return self.compare_figures(self.calculate_area(), other.calculate_area())
-    
-    def compare_perimeter(self, other: Figure) -> str:
-        return self.compare_figures(self.calculate_perimeter(), other.calculate_perimeter())
 
-class Triangle(Figure, Comparison):
+class Triangle(Comparison):
     def __init__(self, a: float, b: float, c: float) -> None:
         self.a: float = a
         self.b: float = b
@@ -81,21 +73,45 @@ class Triangle(Figure, Comparison):
         p = self.calculate_perimeter() / 2
         return math.sqrt(p * (p - self.a) * (p - self.b) * (p - self.c))
     
-    def compare_area(self, other: Figure) -> str:
-        return self.compare_figures(self.calculate_area(), other.calculate_area())
-    
-    def compare_perimeter(self, other: Figure) -> str:
-        return self.compare_figures(self.calculate_perimeter(), other.calculate_perimeter())
-
 rectangle: Rectangle = Rectangle(2, 6)
 square: Square = Square(4)
 circle: Circle = Circle(3)
 triangle: Triangle = Triangle(3, 4, 5)
 
-print("Площадь прямоугольника:", rectangle.calculate_area(), "Периметр прямоугольника:", rectangle.calculate_perimeter())
-print("Площадь квадрата:", square.calculate_area(), "Периметр квадрата:", square.calculate_perimeter())
-print("Площадь окружности:", circle.calculate_area(), "Периметр окружности:", circle.calculate_perimeter())
-print("Площадь треугольника:", triangle.calculate_area(), "Периметр треугольника:", triangle.calculate_perimeter())
+print(
+    "Площадь прямоугольника:", rectangle.calculate_area(),
+    "Периметр прямоугольника:", rectangle.calculate_perimeter()
+)
+print(
+    "Площадь квадрата:", square.calculate_area(),
+    "Периметр квадрата:", square.calculate_perimeter()
+)
+print(
+    "Площадь окружности:", circle.calculate_area(),
+    "Периметр окружности:", circle.calculate_perimeter()
+)
+print(
+    "Площадь треугольника:", triangle.calculate_area(),
+    "Периметр треугольника:", triangle.calculate_perimeter()
+)
 
-print("Площадь квадрата против прямоугольника:", square.compare_area(rectangle))
-print("Периметр квадрата против прямоугольника:", square.compare_perimeter(rectangle))
+print(
+    "Площадь квадрата больше площади прямоугольника:",
+    square.is_greater(rectangle, compare_by='area')
+)
+print(
+    "Площадь квадрата меньше площади прямоугольника:",
+    square.is_less(rectangle, compare_by='area')
+)
+print(
+    "Периметр квадрата больше периметра прямоугольника:",
+    square.is_greater(rectangle, compare_by='perimeter')
+)
+print(
+    "Периметр квадрата меньше периметра прямоугольника:",
+    square.is_less(rectangle, compare_by='perimeter')
+)
+print(
+    "Периметр квадрата равен периметру прямоугольника:",
+    square.are_equal(rectangle, compare_by='perimeter')
+)
